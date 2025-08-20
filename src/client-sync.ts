@@ -10,11 +10,7 @@ type Preferences = {
   whmcsAdminPath: string;
 };
 
-async function whmcsApiRequest(
-  prefs: Preferences,
-  action: string,
-  params: Record<string, string | number> = {}
-) {
+async function whmcsApiRequest(prefs: Preferences, action: string, params: Record<string, string | number> = {}) {
   const body = new URLSearchParams({
     ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     identifier: prefs.whmcsApiIdentifier,

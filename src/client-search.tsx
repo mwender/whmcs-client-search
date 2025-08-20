@@ -86,19 +86,9 @@ export default function Command() {
             icon={Icon.Person}
             actions={
               <ActionPanel>
-                <Action.OpenInBrowser
-                  title="Open Billable Items"
-                  url={client.urls.billable}
-                />
-                <Action.OpenInBrowser
-                  title="Open Profile"
-                  url={client.urls.profile}
-                  shortcut={{ modifiers: ["cmd"], key: "return" }}
-                />
-                <Action.CopyToClipboard
-                  title="Copy Email"
-                  content={client.email}
-                />
+                <Action.OpenInBrowser title="Open Billable Items" url={client.urls.billable} />
+                <Action.OpenInBrowser title="Open Profile" url={client.urls.profile} shortcut={{ modifiers: ["cmd"], key: "return" }} />
+                <Action.CopyToClipboard title="Copy Email" content={client.email} />
               </ActionPanel>
             }
           />
