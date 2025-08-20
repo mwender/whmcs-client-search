@@ -1,23 +1,25 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "whmcs-client-quicklinks",
-  "title": "WHMCS Client Quicklinks",
-  "description": "Search your WHMCS Client database and quickly link to a client's profile or billable entries.",
+  "name": "whmcs-client-search",
+  "title": "WHMCS Client Search",
+  "description": "Search your WHMCS Clients and quickly access the client's profile, billable entries, and more.",
   "icon": "extension-icon.png",
   "author": "mwender",
   "owner": "wenmark-digital-solutions",
   "license": "MIT",
   "commands": [
     {
-      "name": "search-clients",
-      "title": "Search Clients",
-      "description": "Searches your local WHMCS client list.",
+      "name": "client-search",
+      "title": "Client Search",
+      "subtitle": "WHMCS",
+      "description": "Searches your WHMCS clients.",
       "mode": "view"
     },
     {
-      "name": "sync-clients",
-      "title": "Sync Clients",
-      "description": "Syncs your WHMCS client list from remote.",
+      "name": "client-sync",
+      "title": "Client Sync",
+      "subtitle": "WHMCS",
+      "description": "Syncs your WHMCS clients locally.",
       "mode": "no-view"
     }
   ],
