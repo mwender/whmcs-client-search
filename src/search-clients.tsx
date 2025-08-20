@@ -1,7 +1,8 @@
-import { List, ActionPanel, Action, Icon, getPreferenceValues, environment } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, environment } from "@raycast/api";
 import { useEffect, useState } from "react";
 import fs from "fs/promises";
 import path from "path";
+import Fuse from "fuse.js";
 
 type Client = {
   id: string;
@@ -18,7 +19,10 @@ type Client = {
 
 export default function Command() {
   const [clients, setClients] = useState<Client[]>([]);
+  const [filtered, setFiltered] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [fuse, setFuse] = useState<Fuse<Client> | null>(null);
 
   useEffect(() => {
     async function loadClients() {
@@ -27,6 +31,14 @@ export default function Command() {
         const contents = await fs.readFile(filePath, "utf-8");
         const parsed: Client[] = JSON.parse(contents);
         setClients(parsed);
+        setFiltered(parsed);
+
+        // Initialize Fuse with desired keys
+        const fuseInstance = new Fuse(parsed, {
+          keys: ["name", "email", "company"],
+          threshold: 0.3, // lower = stricter match
+        });
+        setFuse(fuseInstance);
       } catch (error) {
         console.error("Failed to load clients.json:", error);
       } finally {
@@ -36,9 +48,23 @@ export default function Command() {
     loadClients();
   }, []);
 
+  function handleSearch(query: string) {
+    if (!fuse || query.trim().length === 0) {
+      setFiltered(clients);
+    } else {
+      const results = fuse.search(query).map((r) => r.item);
+      setFiltered(results);
+    }
+  }
+
   return (
-    <List isLoading={isLoading} searchBarPlaceholder="Search WHMCS Clients…">
-      {clients.map((client) => (
+    <List
+      isLoading={isLoading}
+      onSearchTextChange={handleSearch}
+      searchBarPlaceholder="Search by name, email, or company..."
+      throttle
+    >
+      {filtered.map((client) => (
         <List.Item
           key={client.id}
           title={client.name}
@@ -47,9 +73,19 @@ export default function Command() {
           icon={Icon.Person}
           actions={
             <ActionPanel>
-              <Action.OpenInBrowser title="Open Billable Items" url={client.urls.billable} />
-              <Action.OpenInBrowser title="Open Profile" url={client.urls.profile} shortcut={{ modifiers: ["cmd"], key: "return" }} />
-              <Action.CopyToClipboard title="Copy Email" content={client.email} />
+              <Action.OpenInBrowser
+                title="Open Billable Items"
+                url={client.urls.billable}
+              />
+              <Action.OpenInBrowser
+                title="Open Profile"
+                url={client.urls.profile}
+                shortcut={{ modifiers: ["cmd"], key: "return" }}
+              />
+              <Action.CopyToClipboard
+                title="Copy Email"
+                content={client.email}
+              />
             </ActionPanel>
           }
         />
