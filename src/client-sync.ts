@@ -10,7 +10,24 @@ type Preferences = {
   whmcsAdminPath: string;
 };
 
-async function whmcsApiRequest(prefs: Preferences, action: string, params: Record<string, string | number> = {}) {
+type Client = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  name: string;
+  email: string;
+  company: string;
+  urls: {
+    profile: string;
+    billable: string;
+  };
+};
+
+async function whmcsApiRequest(
+  prefs: Preferences,
+  action: string,
+  params: Record<string, string | number> = {}
+) {
   const body = new URLSearchParams({
     ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     identifier: prefs.whmcsApiIdentifier,
@@ -52,7 +69,7 @@ export default async function main() {
     const adminPath = prefs.whmcsAdminPath.replace(/\/$/, ""); // trim trailing slash
 
     // Map and normalize clients
-    const clients = response.clients.client.map((c: any) => {
+    const clients: Client[] = response.clients.client.map((c: Record<string, unknown>): Client => {
       const firstname = String(c.firstname ?? "").trim();
       const lastname = String(c.lastname ?? "").trim();
       const id = String(c.id);
@@ -62,8 +79,8 @@ export default async function main() {
         firstname,
         lastname,
         name: `${lastname}, ${firstname}`, // for display/sorting
-        email: c.email,
-        company: c.companyname,
+        email: String(c.email ?? ""),
+        company: String(c.companyname ?? ""),
         urls: {
           profile: `${adminPath}/clientssummary.php?userid=${id}`,
           billable: `${adminPath}/clientsbillableitems.php?userid=${id}`,
@@ -72,7 +89,7 @@ export default async function main() {
     });
 
     // Sort alphabetically by "Lastname, Firstname"
-    clients.sort((a: any, b: any) => a.name.localeCompare(b.name));
+    clients.sort((a: Client, b: Client) => a.name.localeCompare(b.name));
 
     // Use Raycast's persistent support path
     const dataDir = environment.supportPath;
