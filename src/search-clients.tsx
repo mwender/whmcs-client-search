@@ -6,8 +6,6 @@ import Fuse from "fuse.js";
 
 type Client = {
   id: string;
-  firstname: string;
-  lastname: string;
   name: string;
   email: string;
   company: string;
@@ -21,7 +19,6 @@ export default function Command() {
   const [clients, setClients] = useState<Client[]>([]);
   const [filtered, setFiltered] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
   const [fuse, setFuse] = useState<Fuse<Client> | null>(null);
 
   useEffect(() => {
@@ -30,13 +27,13 @@ export default function Command() {
         const filePath = path.join(environment.supportPath, "clients.json");
         const contents = await fs.readFile(filePath, "utf-8");
         const parsed: Client[] = JSON.parse(contents);
+
         setClients(parsed);
         setFiltered(parsed);
 
-        // Initialize Fuse with desired keys
         const fuseInstance = new Fuse(parsed, {
           keys: ["name", "email", "company"],
-          threshold: 0.3, // lower = stricter match
+          threshold: 0.3,
         });
         setFuse(fuseInstance);
       } catch (error) {
@@ -67,8 +64,8 @@ export default function Command() {
       {filtered.map((client) => (
         <List.Item
           key={client.id}
-          title={client.name}
-          subtitle={client.company || ""}
+          title={client.name}       // string only
+          subtitle={client.company} // string only
           accessories={[{ text: client.email }]}
           icon={Icon.Person}
           actions={
@@ -82,10 +79,7 @@ export default function Command() {
                 url={client.urls.profile}
                 shortcut={{ modifiers: ["cmd"], key: "return" }}
               />
-              <Action.CopyToClipboard
-                title="Copy Email"
-                content={client.email}
-              />
+              <Action.CopyToClipboard title="Copy Email" content={client.email} />
             </ActionPanel>
           }
         />
