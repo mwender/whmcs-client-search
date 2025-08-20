@@ -1,3 +1,9 @@
-# WHMCS Client Quicklinks Changelog
+# WHMCS Client Search Changelog
 
-## [Initial Version] - {PR_MERGE_DATE}
+## [1.0.0] - {PR_MERGE_DATE}
+
+Initial release with:
+
+- Client Sync for creating a local clients.json.
+- Client Search with "fuzzy" searching across name, company, and email fields.
+- Quicklinks to Client Profiles and Billable Items. 

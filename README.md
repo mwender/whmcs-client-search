@@ -18,13 +18,3 @@ Before you create your API Identifier and Secret, you'll want to ensure you have
 ## About This Extension
 
 [WHMCS](https://www.whmcs.com/) is a web hosting automation software used by web hosts for client billing, hosting automation, and support ticketing. This extension greatly simplifies the day-to-day tasks of working with clients in your WHMCS.
-
-## Changelog
-
-__1.0.0__
-
-Initial release with:
-
-- Client Sync for creating a local clients.json.
-- Client Search with "fuzzy" searching across name, company, and email fields.
-- Quicklinks to Client Profiles and Billable Items. 
