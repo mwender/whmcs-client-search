@@ -6,6 +6,7 @@
   "icon": "extension-icon.png",
   "author": "mwender",
   "owner": "wenmark-digital-solutions",
+  "categories": ["Productivity"],
   "license": "MIT",
   "commands": [
     {
