@@ -20,28 +20,32 @@ export default function Command() {
   const [filtered, setFiltered] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fuse, setFuse] = useState<Fuse<Client> | null>(null);
+  const [hasError, setHasError] = useState(false);
+
+  async function loadClients() {
+    try {
+      const filePath = path.join(environment.supportPath, "clients.json");
+      const contents = await fs.readFile(filePath, "utf-8");
+      const parsed: Client[] = JSON.parse(contents);
+
+      setClients(parsed);
+      setFiltered(parsed);
+
+      const fuseInstance = new Fuse(parsed, {
+        keys: ["name", "email", "company"],
+        threshold: 0.3,
+      });
+      setFuse(fuseInstance);
+      setHasError(false);
+    } catch (error) {
+      console.error("Failed to load clients.json:", error);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function loadClients() {
-      try {
-        const filePath = path.join(environment.supportPath, "clients.json");
-        const contents = await fs.readFile(filePath, "utf-8");
-        const parsed: Client[] = JSON.parse(contents);
-
-        setClients(parsed);
-        setFiltered(parsed);
-
-        const fuseInstance = new Fuse(parsed, {
-          keys: ["name", "email", "company"],
-          threshold: 0.3,
-        });
-        setFuse(fuseInstance);
-      } catch (error) {
-        console.error("Failed to load clients.json:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     loadClients();
   }, []);
 
@@ -61,29 +65,45 @@ export default function Command() {
       searchBarPlaceholder="Search by name, email, or company..."
       throttle
     >
-      {filtered.map((client) => (
-        <List.Item
-          key={client.id}
-          title={client.name}       // string only
-          subtitle={client.company} // string only
-          accessories={[{ text: client.email }]}
-          icon={Icon.Person}
+      {hasError ? (
+        <List.EmptyView
+          icon={Icon.ExclamationMark}
+          title="No Clients Found"
+          description="It looks like clients.json is missing. Run 'Sync Clients' first."
           actions={
             <ActionPanel>
-              <Action.OpenInBrowser
-                title="Open Billable Items"
-                url={client.urls.billable}
-              />
-              <Action.OpenInBrowser
-                title="Open Profile"
-                url={client.urls.profile}
-                shortcut={{ modifiers: ["cmd"], key: "return" }}
-              />
-              <Action.CopyToClipboard title="Copy Email" content={client.email} />
+              <Action title="Retry" onAction={loadClients} />
             </ActionPanel>
           }
         />
-      ))}
+      ) : (
+        filtered.map((client) => (
+          <List.Item
+            key={client.id}
+            title={client.name}
+            subtitle={client.company}
+            accessories={[{ text: client.email }]}
+            icon={Icon.Person}
+            actions={
+              <ActionPanel>
+                <Action.OpenInBrowser
+                  title="Open Billable Items"
+                  url={client.urls.billable}
+                />
+                <Action.OpenInBrowser
+                  title="Open Profile"
+                  url={client.urls.profile}
+                  shortcut={{ modifiers: ["cmd"], key: "return" }}
+                />
+                <Action.CopyToClipboard
+                  title="Copy Email"
+                  content={client.email}
+                />
+              </ActionPanel>
+            }
+          />
+        ))
+      )}
     </List>
   );
 }
