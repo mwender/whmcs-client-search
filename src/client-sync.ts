@@ -1,4 +1,4 @@
-import { showHUD, getPreferenceValues, environment, LaunchType, LaunchProps } from "@raycast/api";
+import { showHUD, getPreferenceValues, environment, LaunchProps } from "@raycast/api";
 import fetch from "node-fetch";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -32,7 +32,21 @@ type Client = {
   };
 };
 
-async function whmcsApiRequest(prefs: Preferences, action: string, params: Record<string, string | number> = {}) {
+// Custom launch context so we can type modifiers
+type ClientSyncLaunchContext = {
+  modifiers?: {
+    cmd?: boolean;
+    opt?: boolean;
+    shift?: boolean;
+    ctrl?: boolean;
+  };
+};
+
+async function whmcsApiRequest(
+  prefs: Preferences,
+  action: string,
+  params: Record<string, string | number> = {}
+) {
   const body = new URLSearchParams({
     ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     identifier: prefs.whmcsApiIdentifier,
@@ -60,7 +74,7 @@ async function whmcsApiRequest(prefs: Preferences, action: string, params: Recor
   return data;
 }
 
-export default async function main(props: LaunchProps<{ launchType: LaunchType }>) {
+export default async function main(props: LaunchProps<{ launchContext?: ClientSyncLaunchContext }>) {
   try {
     const prefs = getPreferenceValues<Preferences>();
 
@@ -132,7 +146,7 @@ export default async function main(props: LaunchProps<{ launchType: LaunchType }
     await showHUD(
       `Synced ${clients.length} client${clients.length === 1 ? "" : "s"}${
         includeInactive ? " (including inactive)" : ""
-      } ✅`,
+      } ✅`
     );
   } catch (error) {
     console.error(error);
