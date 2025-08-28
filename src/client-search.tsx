@@ -21,6 +21,7 @@ export default function Command() {
   const [isLoading, setIsLoading] = useState(true);
   const [fuse, setFuse] = useState<Fuse<Client> | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [query, setQuery] = useState("");
 
   async function loadClients() {
     try {
@@ -34,10 +35,9 @@ export default function Command() {
       const fuseInstance = new Fuse(parsed, {
         keys: ["name", "email", "company"],
         threshold: 0.3,
-        ignoreLocation: true, // lets matches happen anywhere in the string
-        useExtendedSearch: true, // enables better multi-term handling
+        ignoreLocation: true,
+        useExtendedSearch: true,
       });
-
 
       setFuse(fuseInstance);
       setHasError(false);
@@ -53,11 +53,18 @@ export default function Command() {
     loadClients();
   }, []);
 
-  function handleSearch(query: string) {
-    if (!fuse || query.trim().length === 0) {
+  useEffect(() => {
+    if (query.trim().length === 0) {
+      setFiltered(clients);
+    }
+  }, [query, clients]);
+
+  function handleSearch(newQuery: string) {
+    setQuery(newQuery);
+    if (!fuse || newQuery.trim().length === 0) {
       setFiltered(clients);
     } else {
-      const results = fuse.search(query).map((r) => r.item);
+      const results = fuse.search(newQuery).map((r) => r.item);
       setFiltered(results);
     }
   }
@@ -79,6 +86,12 @@ export default function Command() {
               <Action title="Retry" onAction={loadClients} />
             </ActionPanel>
           }
+        />
+      ) : !isLoading && filtered.length === 0 ? (
+        <List.EmptyView
+          icon={Icon.MagnifyingGlass}
+          title="No Matches"
+          description="Try adjusting your search terms."
         />
       ) : (
         filtered.map((client) => (
