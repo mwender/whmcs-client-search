@@ -34,7 +34,11 @@ export default function Command() {
       const fuseInstance = new Fuse(parsed, {
         keys: ["name", "email", "company"],
         threshold: 0.3,
+        ignoreLocation: true, // lets matches happen anywhere in the string
+        useExtendedSearch: true, // enables better multi-term handling
       });
+
+
       setFuse(fuseInstance);
       setHasError(false);
     } catch (error) {
