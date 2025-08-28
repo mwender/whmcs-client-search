@@ -32,11 +32,7 @@ type Client = {
   };
 };
 
-async function whmcsApiRequest(
-  prefs: Preferences,
-  action: string,
-  params: Record<string, string | number> = {}
-) {
+async function whmcsApiRequest(prefs: Preferences, action: string, params: Record<string, string | number> = {}) {
   const body = new URLSearchParams({
     ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     identifier: prefs.whmcsApiIdentifier,
@@ -136,7 +132,7 @@ export default async function main(props: LaunchProps<{ launchType: LaunchType }
     await showHUD(
       `Synced ${clients.length} client${clients.length === 1 ? "" : "s"}${
         includeInactive ? " (including inactive)" : ""
-      } ✅`
+      } ✅`,
     );
   } catch (error) {
     console.error(error);

@@ -88,11 +88,7 @@ export default function Command() {
           }
         />
       ) : !isLoading && filtered.length === 0 ? (
-        <List.EmptyView
-          icon={Icon.MagnifyingGlass}
-          title="No Matches"
-          description="Try adjusting your search terms."
-        />
+        <List.EmptyView icon={Icon.MagnifyingGlass} title="No Matches" description="Try adjusting your search terms." />
       ) : (
         filtered.map((client) => (
           <List.Item
