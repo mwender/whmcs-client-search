@@ -10,6 +10,15 @@ type Preferences = {
   whmcsAdminPath: string;
 };
 
+type ApiClient = {
+  id: string | number;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  companyname?: string;
+  status?: string;
+};
+
 type Client = {
   id: string;
   firstname: string;
@@ -23,7 +32,11 @@ type Client = {
   };
 };
 
-async function whmcsApiRequest(prefs: Preferences, action: string, params: Record<string, string | number> = {}) {
+async function whmcsApiRequest(
+  prefs: Preferences,
+  action: string,
+  params: Record<string, string | number> = {}
+) {
   const body = new URLSearchParams({
     ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     identifier: prefs.whmcsApiIdentifier,
@@ -67,7 +80,7 @@ export default async function main(props: LaunchProps<{ launchType: LaunchType }
 
     const adminPath = prefs.whmcsAdminPath.replace(/\/$/, "");
 
-    let clients: Client[] = response.clients.client.map((c: Record<string, unknown>): Client => {
+    let clients: Client[] = (response.clients.client as ApiClient[]).map((c): Client => {
       const firstname = String(c.firstname ?? "").trim();
       const lastname = String(c.lastname ?? "").trim();
       const id = String(c.id);
@@ -88,9 +101,9 @@ export default async function main(props: LaunchProps<{ launchType: LaunchType }
 
     // By default, keep only Active clients
     if (!includeInactive) {
-      clients = response.clients.client
-        .filter((c: any) => String(c.status) === "Active")
-        .map((c: Record<string, unknown>): Client => {
+      clients = (response.clients.client as ApiClient[])
+        .filter((c) => String(c.status) === "Active")
+        .map((c): Client => {
           const firstname = String(c.firstname ?? "").trim();
           const lastname = String(c.lastname ?? "").trim();
           const id = String(c.id);
