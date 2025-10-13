@@ -1,6 +1,10 @@
 # WHMCS Client Search Changelog
 
-## [Better Search, Better Sync] - {PR_MERGE_DATE}
+## ["Open Support Ticket" Option] - {PR_MERGE_DATE}
+
+- You can now open a support ticket for your selected client by hitting `CMD + T`.
+
+## [Better Search, Better Sync] - 2025-08-27
 
 - We can now search `{$firstname} {$lastname}` instead of searching those fields separately.
 - Client Sync now only syncs Clients whose status is "Active" by default. Use `CMD + Return` to sync all clients regardless of status.

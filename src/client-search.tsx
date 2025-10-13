@@ -6,12 +6,15 @@ import Fuse from "fuse.js";
 
 type Client = {
   id: string;
+  firstname: string;
+  lastname: string;
   name: string;
   email: string;
   company: string;
   urls: {
     profile: string;
     billable: string;
+    supportTicket: string;
   };
 };
 
@@ -105,6 +108,11 @@ export default function Command() {
                   url={client.urls.profile}
                   shortcut={{ modifiers: ["cmd"], key: "return" }}
                 />
+                <Action.OpenInBrowser
+                  title="Open Support Ticket"
+                  url={client.urls.supportTicket}
+                  shortcut={{ modifiers: ["cmd"], key: "t" }}
+                />                
                 <Action.CopyToClipboard title="Copy Email" content={client.email} />
               </ActionPanel>
             }

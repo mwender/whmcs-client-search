@@ -29,6 +29,7 @@ type Client = {
   urls: {
     profile: string;
     billable: string;
+    supportTicket: string;
   };
 };
 
@@ -101,7 +102,8 @@ export default async function main(props: LaunchProps<{ launchContext?: ClientSy
         urls: {
           profile: `${adminPath}/clientssummary.php?userid=${id}`,
           billable: `${adminPath}/clientsbillableitems.php?userid=${id}`,
-        },
+          supportTicket: `${adminPath}/supporttickets.php?action=open&userid=${id}`,
+        }
       };
     });
 
@@ -124,6 +126,7 @@ export default async function main(props: LaunchProps<{ launchContext?: ClientSy
             urls: {
               profile: `${adminPath}/clientssummary.php?userid=${id}`,
               billable: `${adminPath}/clientsbillableitems.php?userid=${id}`,
+              supportTicket: `${adminPath}/supporttickets.php?action=open&userid=${id}`,
             },
           };
         });
