@@ -112,7 +112,7 @@ export default function Command() {
                   title="Open Support Ticket"
                   url={client.urls.supportTicket}
                   shortcut={{ modifiers: ["cmd"], key: "t" }}
-                />                
+                />
                 <Action.CopyToClipboard title="Copy Email" content={client.email} />
               </ActionPanel>
             }
