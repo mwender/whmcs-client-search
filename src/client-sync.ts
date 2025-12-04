@@ -86,7 +86,13 @@ export default async function main(props: LaunchProps<{ launchContext?: ClientSy
 
     const adminPath = prefs.whmcsAdminPath.replace(/\/$/, "");
 
-    let clients: Client[] = (response.clients.client as ApiClient[]).map((c): Client => {
+    const rawClients = response.clients.client as ApiClient[];
+
+    const filteredClients = includeInactive
+      ? rawClients
+      : rawClients.filter((c) => String(c.status ?? "").trim() === "Active");
+
+    const clients: Client[] = filteredClients.map((c) => {
       const firstname = String(c.firstname ?? "").trim();
       const lastname = String(c.lastname ?? "").trim();
       const id = String(c.id);
@@ -106,31 +112,6 @@ export default async function main(props: LaunchProps<{ launchContext?: ClientSy
       };
     });
 
-    // By default, keep only Active clients
-    if (!includeInactive) {
-      clients = (response.clients.client as ApiClient[])
-        .filter((c) => String(c.status) === "Active")
-        .map((c): Client => {
-          const firstname = String(c.firstname ?? "").trim();
-          const lastname = String(c.lastname ?? "").trim();
-          const id = String(c.id);
-
-          return {
-            id,
-            firstname,
-            lastname,
-            name: `${lastname}, ${firstname}`,
-            email: String(c.email ?? ""),
-            company: String(c.companyname ?? ""),
-            urls: {
-              profile: `${adminPath}/clientssummary.php?userid=${id}`,
-              billable: `${adminPath}/clientsbillableitems.php?userid=${id}`,
-              supportTicket: `${adminPath}/supporttickets.php?action=open&userid=${id}`,
-            },
-          };
-        });
-    }
-
     clients.sort((a: Client, b: Client) => a.name.localeCompare(b.name));
 
     const dataDir = environment.supportPath;
@@ -144,7 +125,7 @@ export default async function main(props: LaunchProps<{ launchContext?: ClientSy
     await showHUD(
       `Synced ${clients.length} client${clients.length === 1 ? "" : "s"}${
         includeInactive ? " (including inactive)" : ""
-      } ✅`,
+      } ✅`
     );
   } catch (error) {
     console.error(error);
