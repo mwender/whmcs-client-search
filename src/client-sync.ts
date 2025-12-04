@@ -125,7 +125,7 @@ export default async function main(props: LaunchProps<{ launchContext?: ClientSy
     await showHUD(
       `Synced ${clients.length} client${clients.length === 1 ? "" : "s"}${
         includeInactive ? " (including inactive)" : ""
-      } ✅`
+      } ✅`,
     );
   } catch (error) {
     console.error(error);
