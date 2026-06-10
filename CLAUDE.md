@@ -36,6 +36,15 @@ Two tracks:
 1. **Version history**: commit and push to `origin/main` (github.com/mwender/whmcs-client-search).
 2. **Raycast Store**: `npm run publish` (`npx @raycast/api@latest publish`) — validates, forks `raycast/extensions`, and opens a PR for Raycast's review. The update goes live when the PR merges.
 
-For every user-facing change, add a `CHANGELOG.md` entry dated `{PR_MERGE_DATE}` (literal placeholder — Raycast stamps the real date at PR merge).
+### CHANGELOG.md convention
+
+Raycast stamps `{PR_MERGE_DATE}` with the real date **only in the `raycast/extensions` monorepo copy** at PR merge — this repo's copy keeps the literal placeholder forever. So a leftover `{PR_MERGE_DATE}` in the top entry means that entry has likely **already shipped**; never append new bullets to it.
+
+When starting a new release:
+
+1. Resolve any leftover `{PR_MERGE_DATE}` in the top entry to its actual merged date (`YYYY-MM-DD`) — authoritative source: `https://raw.githubusercontent.com/raycast/extensions/main/extensions/whmcs-client-search/CHANGELOG.md` (or the store page at raycast.com/mwender/whmcs-client-search).
+2. Add a **new section above it** titled `## [Short Title] - {PR_MERGE_DATE}` for the current changes.
+
+Never edit existing dated sections.
 
 Note: this working copy lives in `~/.raycast/extensions/`, the same directory where Raycast materializes installed extensions. It is the git checkout; all edits happen here.
